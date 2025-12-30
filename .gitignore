@@ -1,0 +1,82 @@
+# Environment & Configuration Files (SENSITIVE - JANGAN UPLOAD)
+config/database.php
+.env
+.env.local
+.env.*.local
+
+# Composer Dependencies (auto-generated)
+vendor/
+composer.lock
+
+# Dependencies Lainnya
+node_modules/
+package-lock.json
+yarn.lock
+
+# Log Files
+*.log
+debug.log
+error.log
+logs/
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# User Upload Files (Generated)
+public/uploads/
+uploads/
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+.sublime-project
+.sublime-workspace
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS-Specific Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+# PHP-Specific
+*.php~
+.phpunit.result.cache
+.coverage
+
+# Session & Cache
+sessions/
+cache/
+*.cache
+
+# Build/Distribution
+build/
+dist/
+
+# Testing
+coverage/
+.phpunit.result.cache
+
+# Local Development Files
+local.php
+*.local
+development.php
+
+# MySQL Dump Files (if storing locally)
+*.sql
+!sql/cleanse_db.sql
+
+# Miscellaneous
+.htaccess.local
+config.local.php
+settings.local.php

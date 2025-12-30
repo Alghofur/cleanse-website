@@ -1,0 +1,25 @@
+<?php
+/**
+ * Database Configuration Template
+ * 
+ * COPY FILE INI KE config/database.php DAN ISI DENGAN SETTING LOKAL ANDA
+ * File config/database.php TIDAK BOLEH DIUPLOAD KE GITHUB
+ * 
+ * Untuk setiap environment (local, staging, production):
+ * 1. Copy file ini ke config/database.php
+ * 2. Edit dengan credentials lokal Anda
+ * 3. File database.php akan di-ignore oleh .gitignore
+ */
+
+return [
+    'host' => 'localhost',           // Database host
+    'dbname' => 'cleanse_db',        // Database name
+    'username' => 'root',            // Database username
+    'password' => '',                // Database password
+    'charset' => 'utf8mb4',          // Character set
+    'options' => [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ]
+];
