@@ -296,11 +296,7 @@ public static function findByCondition($condition) {
 }
 ```
 
-## 📧 Support
 
-Untuk bantuan lebih lanjut atau laporan bug:
-- Email: support@cleanse.com
-- Phone: +1-800-CLEANSE
 
 ## 📄 License
 
