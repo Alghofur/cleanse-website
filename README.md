@@ -11,18 +11,12 @@ Aplikasi web untuk booking service cleaning profesional dengan fitur lengkap unt
 
 ### Installation
 
-1. **Clone/Download Project**
-   ```bash
-   cd c:\xampp\htdocs\
-   # Copy cleanse-website folder
-   ```
-
-2. **Setup Database**
+1. **Setup Database**
    - Buka phpMyAdmin: `http://localhost/phpmyadmin`
    - Import file `sql/cleanse_db.sql`
    - Database otomatis akan dibuat dengan sample data
 
-3. **Access Application**
+2. **Access Application**
    ```
    http://localhost/cleanse-website/
    ```
@@ -296,11 +290,7 @@ public static function findByCondition($condition) {
 }
 ```
 
-## 📧 Support
 
-Untuk bantuan lebih lanjut atau laporan bug:
-- Email: support@cleanse.com
-- Phone: +1-800-CLEANSE
 
 ## 📄 License
 
