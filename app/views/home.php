@@ -77,8 +77,20 @@ $title = 'Cleanse - Professional Cleaning Services';
                     <?php foreach ($services as $service): ?>
                         <div class="col-md-4 mb-4">
                             <div class="card h-100">
-                                <?php if ($service->image_url): ?>
-                                    <img src="<?php echo $service->image_url; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($service->name); ?>">
+                                <?php 
+                                    // Map service names to image files
+                                    $imageMap = [
+                                        'Regular Home Cleaning' => 'reguler_home_cleaning.jpg',
+                                        'Deep Cleaning' => 'deep_cleaning.jpg',
+                                        'Office Cleaning' => 'office_cleaning.jpg',
+                                        'Carpet Cleaning' => 'carpet_cleaning.jpg',
+                                        'Window Cleaning' => 'window_cleaning.jpg'
+                                    ];
+                                    $imageName = isset($imageMap[$service->name]) ? $imageMap[$service->name] : null;
+                                    $imagePath = $imageName ? ASSETS_PATH . 'images/' . $imageName : null;
+                                ?>
+                                <?php if ($imagePath): ?>
+                                    <img src="<?php echo $imagePath; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($service->name); ?>" style="height: 200px; object-fit: cover;">
                                 <?php else: ?>
                                     <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
                                         <i class="bi bi-image text-white" style="font-size: 60px;"></i>
