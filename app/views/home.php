@@ -28,7 +28,11 @@ $title = 'Cleanse - Professional Cleaning Services';
                         <a class="nav-link" href="<?php echo APP_URL; ?>">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo APP_URL; ?>/customer/services">Services</a>
+                        <?php if (Auth::check()): ?>
+                            <a class="nav-link" href="<?php echo APP_URL; ?>/customer/services">Services</a>
+                        <?php else: ?>
+                            <a class="nav-link" href="<?php echo APP_URL; ?>/auth/login">Services</a>
+                        <?php endif; ?>
                     </li>
                     <?php if (Auth::check()): ?>
                         <li class="nav-item">
@@ -57,9 +61,15 @@ $title = 'Cleanse - Professional Cleaning Services';
                 <div class="col-lg-6">
                     <h1 class="display-4 fw-bold mb-3">Professional Cleaning Services</h1>
                     <p class="lead mb-4">We provide top-quality cleaning services for your home and office. Book now and get 20% discount on your first order!</p>
-                    <a href="<?php echo APP_URL; ?>/customer/book" class="btn btn-light btn-lg">
-                        <i class="bi bi-calendar3"></i> Book a Service
-                    </a>
+                    <?php if (Auth::check()): ?>
+                        <a href="<?php echo APP_URL; ?>/customer/book" class="btn btn-light btn-lg">
+                            <i class="bi bi-calendar3"></i> Book a Service
+                        </a>
+                    <?php else: ?>
+                        <a href="<?php echo APP_URL; ?>/auth/login" class="btn btn-light btn-lg">
+                            <i class="bi bi-calendar3"></i> Book a Service
+                        </a>
+                    <?php endif; ?>
                 </div>
                 <div class="col-lg-6 text-center">
                     <i class="bi bi-bucket-fill" style="font-size: 150px;"></i>
@@ -102,7 +112,11 @@ $title = 'Cleanse - Professional Cleaning Services';
                                     <p class="fw-bold">$<?php echo number_format($service->price_per_hour, 2); ?>/hour</p>
                                 </div>
                                 <div class="card-footer bg-white">
-                                    <a href="<?php echo APP_URL; ?>/customer/book" class="btn btn-primary btn-sm w-100">Book Now</a>
+                                    <?php if (Auth::check()): ?>
+                                        <a href="<?php echo APP_URL; ?>/customer/book" class="btn btn-primary btn-sm w-100">Book Now</a>
+                                    <?php else: ?>
+                                        <a href="<?php echo APP_URL; ?>/auth/login" class="btn btn-primary btn-sm w-100">Book Now</a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
