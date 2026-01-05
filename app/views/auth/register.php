@@ -130,23 +130,7 @@ $title = 'Register - Cleanse';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-                            </button>
-                        </div>
-                        
-                        <div class="text-center mt-4">
-                            <p class="text-muted mb-0">
-                                Already have an account? 
-                                <a href="<?= APP_URL ?>/auth/login" class="text-decoration-none fw-semibold">
-                                    Sign in here
-                                </a>
-                            </p>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                         
 
 <script>
     // Form validation
