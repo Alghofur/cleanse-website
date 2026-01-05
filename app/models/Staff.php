@@ -73,6 +73,7 @@ class Staff {
     
     public static function getMonthlySalaryReport($month, $year) {
         $sql = "SELECT 
+                ss.id,
                 u.full_name,
                 ss.base_salary,
                 ss.bonus,

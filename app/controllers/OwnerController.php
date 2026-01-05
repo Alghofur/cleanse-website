@@ -50,28 +50,14 @@ class OwnerController extends BaseController {
     
     private function processStaffSalary() {
         $staffId = $_POST['staff_id'];
-        $month = $_POST['month'];
-        $year = $_POST['year'];
-        
-        // Calculate salary based on completed orders
-        $salarySql = "SELECT 
-                      COUNT(*) as completed_orders,
-                      SUM(o.total_price) as total_revenue
-                      FROM orders o
-                      WHERE o.staff_id = ?
-                      AND o.status = 'completed'
-                      AND MONTH(o.completed_at) = ?
-                      AND YEAR(o.completed_at) = ?";
-        
-        $performance = Database::fetch($salarySql, [$staffId, $month, $year]);
-        
-        $baseSalary = 2000; // Example base salary
-        $bonus = $performance['completed_orders'] * 50; // $50 per completed order
+        $baseSalary = floatval($_POST['base_salary'] ?? 0);
+        $bonus = floatval($_POST['bonus'] ?? 0);
+        $deductions = floatval($_POST['deductions'] ?? 0);
         
         $salaryData = [
             'base_salary' => $baseSalary,
             'bonus' => $bonus,
-            'deductions' => 0,
+            'deductions' => $deductions,
             'payment_date' => date('Y-m-d'),
             'payment_method' => 'bank_transfer'
         ];
@@ -80,29 +66,24 @@ class OwnerController extends BaseController {
     }
     
     private function processAdminSalary() {
-        $adminId = $_POST['admin_id'];
-        
-        $salaryData = [
-            'base_salary' => $_POST['base_salary'],
-            'bonus' => $_POST['bonus'] ?? 0,
-            'deductions' => $_POST['deductions'] ?? 0,
-            'payment_date' => date('Y-m-d'),
-            'payment_method' => 'bank_transfer'
-        ];
+        $adminId = $_POST['staff_id'];
+        $baseSalary = floatval($_POST['base_salary'] ?? 0);
+        $bonus = floatval($_POST['bonus'] ?? 0);
+        $deductions = floatval($_POST['deductions'] ?? 0);
         
         $sql = "INSERT INTO admin_salary 
                 (admin_id, base_salary, bonus, deductions, net_salary, payment_date, paid_by)
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         
-        $netSalary = $salaryData['base_salary'] + $salaryData['bonus'] - $salaryData['deductions'];
+        $netSalary = $baseSalary + $bonus - $deductions;
         
         Database::query($sql, [
             $adminId,
-            $salaryData['base_salary'],
-            $salaryData['bonus'],
-            $salaryData['deductions'],
+            $baseSalary,
+            $bonus,
+            $deductions,
             $netSalary,
-            $salaryData['payment_date'],
+            date('Y-m-d'),
             Auth::user()->id
         ]);
     }
@@ -125,16 +106,41 @@ class OwnerController extends BaseController {
     }
     
     private function getPendingSalaries() {
-        $sql = "SELECT 
-                u.id,
+        $currentMonth = date('m');
+        $currentYear = date('Y');
+        
+        // Get pending staff salaries from current month
+        $staffSql = "SELECT 
                 u.full_name as name,
                 'staff' as type,
-                2000 as amount
-                FROM users u
-                WHERE u.role_id IN (2, 3)
-                LIMIT 5";
+                ss.base_salary as amount,
+                ss.id,
+                ss.payment_status
+                FROM staff_salary ss
+                JOIN users u ON ss.staff_id = u.id
+                WHERE MONTH(ss.payment_date) = ? 
+                AND YEAR(ss.payment_date) = ?
+                AND ss.payment_status = 'pending'
+                ORDER BY u.full_name";
         
-        return Database::fetchAll($sql);
+        // Get pending admin salaries from current month
+        $adminSql = "SELECT 
+                u.full_name as name,
+                'admin' as type,
+                asal.base_salary as amount,
+                asal.id,
+                asal.payment_status
+                FROM admin_salary asal
+                JOIN users u ON asal.admin_id = u.id
+                WHERE MONTH(asal.payment_date) = ? 
+                AND YEAR(asal.payment_date) = ?
+                AND asal.payment_status = 'pending'
+                ORDER BY u.full_name";
+        
+        $staffPending = Database::fetchAll($staffSql, [$currentMonth, $currentYear]);
+        $adminPending = Database::fetchAll($adminSql, [$currentMonth, $currentYear]);
+        
+        return array_merge($staffPending ?? [], $adminPending ?? []);
     }
     
     private function getAdminSalaryReport() {
@@ -186,6 +192,7 @@ class OwnerController extends BaseController {
         $staffReport = Staff::getMonthlySalaryReport($month, $year);
         
         $adminReportSql = "SELECT 
+                           asal.id,
                            u.full_name,
                            asal.base_salary,
                            asal.bonus,
@@ -204,6 +211,59 @@ class OwnerController extends BaseController {
         echo $this->view('owner/salary-reports', [
             'staffReport' => $staffReport,
             'adminReport' => $adminReport,
+            'month' => $month,
+            'year' => $year
+        ]);
+    }
+    
+    public function markSalaryPaid($type = 'staff', $id = null) {
+        Auth::requireRole(ROLE_OWNER);
+        
+        if ($type === 'staff') {
+            $sql = "UPDATE staff_salary SET payment_status = 'paid' WHERE id = ?";
+        } else {
+            $sql = "UPDATE admin_salary SET payment_status = 'paid' WHERE id = ?";
+        }
+        
+        Database::query($sql, [$id]);
+        
+        $_SESSION['success'] = 'Salary marked as paid successfully!';
+        Router::back();
+    }
+    
+    public function financialReport() {
+        Auth::requireRole(ROLE_OWNER);
+        
+        $month = $_GET['month'] ?? date('m');
+        $year = $_GET['year'] ?? date('Y');
+        
+        // Get income from payments
+        $incomeSql = "SELECT 
+                      SUM(amount) as total_income,
+                      COUNT(*) as transaction_count,
+                      payment_method,
+                      DATE_FORMAT(payment_date, '%Y-%m') as month
+                      FROM payments 
+                      WHERE payment_status = 'paid'
+                      AND MONTH(payment_date) = ? 
+                      AND YEAR(payment_date) = ?
+                      GROUP BY payment_method, month";
+        
+        $income = Database::fetchAll($incomeSql, [$month, $year]);
+        
+        // Get expenses from salaries
+        $expenseSql = "SELECT 
+                       SUM(net_salary) as total_expense,
+                       COUNT(*) as salary_count
+                       FROM staff_salary 
+                       WHERE MONTH(payment_date) = ? 
+                       AND YEAR(payment_date) = ?";
+        
+        $expenses = Database::fetch($expenseSql, [$month, $year]);
+        
+        echo $this->view('owner/financial-report', [
+            'income' => $income,
+            'expenses' => $expenses,
             'month' => $month,
             'year' => $year
         ]);

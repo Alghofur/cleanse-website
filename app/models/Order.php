@@ -16,6 +16,14 @@ class Order {
     public $staff_id;
     public $completed_at;
     
+    // Derived fields from joins
+    public $customer_name;
+    public $customer_email;
+    public $customer_phone;
+    public $service_name;
+    public $service_price;
+    public $staff_name;
+    
     // Relationships
     public $customer;
     public $service;
@@ -50,8 +58,11 @@ class Order {
     }
     
     public static function all() {
-        $sql = "SELECT o.*, s.name as service_name 
+        $sql = "SELECT o.*, 
+                u.full_name as customer_name,
+                s.name as service_name
                 FROM orders o
+                JOIN users u ON o.customer_id = u.id
                 JOIN services s ON o.service_id = s.id
                 ORDER BY o.order_date DESC";
         

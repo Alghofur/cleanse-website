@@ -58,6 +58,8 @@ $router->add('/auth/login', function() {
         if ($user) {
             if ($user->role === 'customer') {
                 Router::redirect(APP_URL . '/customer/dashboard');
+            } elseif ($user->role === 'owner') {
+                Router::redirect(APP_URL . '/owner/payroll');
             } else {
                 Router::redirect(APP_URL . '/admin/dashboard');
             }
@@ -185,6 +187,18 @@ $router->add('/owner/salary-reports', function() {
     $controller->salaryReports();
 });
 
+$router->add('/owner/financial-report', function() {
+    Auth::requireRole(ROLE_OWNER);
+    $controller = new OwnerController();
+    $controller->financialReport();
+});
+
+$router->add('/owner/salary-reports/{type}/{id}/mark-paid', function($type, $id) {
+    Auth::requireRole(ROLE_OWNER);
+    $controller = new OwnerController();
+    $controller->markSalaryPaid($type, $id);
+});
+
 // Catch-all for 404
 $router->add('/404', function() {
     http_response_code(404);
@@ -204,7 +218,8 @@ if ($requestUri === '') {
 }
 
 // Debug: log the request URI
-// file_put_contents(APP_ROOT . '/debug.log', date('Y-m-d H:i:s') . ' - REQUEST_URI: ' . $_SERVER['REQUEST_URI'] . ' - Parsed: ' . $requestUri . PHP_EOL, FILE_APPEND);
+error_log('REQUEST_URI: ' . $_SERVER['REQUEST_URI'] . ' - Parsed: ' . $requestUri);
+echo "<!-- DEBUG: Parsed URI = " . htmlspecialchars($requestUri) . " -->\n";
 
 $router->dispatch($requestUri);
 ?>

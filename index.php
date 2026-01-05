@@ -58,6 +58,8 @@ $router->add('/auth/login', function() {
         if ($user) {
             if ($user->role === 'customer') {
                 Router::redirect(APP_URL . '/customer/dashboard');
+            } elseif ($user->role === 'owner') {
+                Router::redirect(APP_URL . '/owner/payroll');
             } else {
                 Router::redirect(APP_URL . '/admin/dashboard');
             }
@@ -183,6 +185,18 @@ $router->add('/owner/salary-reports', function() {
     Auth::requireRole(ROLE_OWNER);
     $controller = new OwnerController();
     $controller->salaryReports();
+});
+
+$router->add('/owner/financial-report', function() {
+    Auth::requireRole(ROLE_OWNER);
+    $controller = new OwnerController();
+    $controller->financialReport();
+});
+
+$router->add('/owner/salary-reports/{type}/{id}/mark-paid', function($type, $id) {
+    Auth::requireRole(ROLE_OWNER);
+    $controller = new OwnerController();
+    $controller->markSalaryPaid($type, $id);
 });
 
 // Catch-all for 404
