@@ -11,13 +11,8 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
+            "App\\Core\\": "app/core/",
             "Tests\\": "tests/"
-        },
-        "classmap": [
-            "app/core/",
-            "app/models/",
-            "app/controllers/",
-            "config/"
-        ]
+        }
     }
 }
