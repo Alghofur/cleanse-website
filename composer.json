@@ -3,7 +3,7 @@
     "description": "Cleanease - Cleaning Services Platform",
     "type": "project",
     "require": {
-        "php": ">=7.4"
+        "php": ">=8.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
