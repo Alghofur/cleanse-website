@@ -6,7 +6,7 @@ config/database.php
 
 # Composer Dependencies (auto-generated)
 vendor/
-composer.lock
+
 
 # Dependencies Lainnya
 node_modules/
